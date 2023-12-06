@@ -1,0 +1,7 @@
+/* Auth module css */
+
+.loginnameBlock {display: flex;}
+.loginname { 
+    color: #fff;
+    font-size: 12px;}
+.signout {float:left; margin-left: 10px;}
