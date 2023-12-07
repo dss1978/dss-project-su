@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase.js";
@@ -8,12 +9,13 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const signUp = async (e) => {
     e.preventDefault();
     // Валидация на полетата, дали са празни
     if (!email || !password) {
-      setError("Моля, попълнете всички полета.");
+      setError("Please fill in all fields.");
       return;
     }
     
@@ -21,8 +23,10 @@ const SignUp = () => {
       setError(null);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log(userCredential);
+      // След успешен вход се пренасочва страницата към CryptoInfo
+      navigate('/CryptoInfo');
     } catch (error) {
-      setError('Грешка при регистрацията');
+      setError('Registration error!');
       console.log(error);
     }
   };
@@ -70,7 +74,7 @@ const SignUp = () => {
         >Sign up</button>
       </div>
       </form>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {error && <div style={{ color: 'red' , marginTop: '20px'}}>{error}</div>}
 </div>
 
 

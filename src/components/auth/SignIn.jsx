@@ -21,7 +21,7 @@ const SignIn = () => {
     e.preventDefault();
     // Валидация на полетата, дали са празни
     if (!email || !password) {
-      setError("Моля, попълнете всички полета.");
+      setError("Please fill in all fields.");
       return;
     }
     
@@ -30,7 +30,7 @@ const SignIn = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log(userCredential);
       // След успешен вход се пренасочва страницата към /
-      navigate('/Home');
+      navigate('/MyWallet');
 
     } catch (error) {
       setError('log in failed');

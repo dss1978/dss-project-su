@@ -20,7 +20,7 @@ export default function GetAllCrypto() {
         console.log(resultGet);
       }
        catch (error) {
-        setError(`Грешка при извличане на данни: ${error.message}`);
+        setError(`Error retrieving data: ${error.message}`);
       } 
        finally {
         setLoading(false);

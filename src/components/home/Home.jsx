@@ -1,68 +1,69 @@
 import React, { useState, useEffect } from 'react';
-import getAllData from '../../lib/get-all-data';
 
-export default function Home () {
-  const [data, setData] = useState([]);
+const Home = () => {
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refreshInterval, setRefreshInterval] = useState(5);
 
-  const fetchData = async () => {
-    const url = 'https://real-time-finance-data.p.rapidapi.com/stock-news?symbol=AAPL%3ANASDAQ&language=en';
-    const options = {
-        method: 'GET',
-        headers: {
-          'X-RapidAPI-Key': '089206b11amshbfb2558f931c3f0p1135b3jsnca1b7650d57e',
-          'X-RapidAPI-Host': 'real-time-finance-data.p.rapidapi.com'
-      }
-    };
+  const fetchDataWithBackoff = async () => {
+    const url = 'https://newsdata.io/api/1/news?apikey=pub_34340e4626ed5895604e502c18712314d37ce&q=crypto&language=en&category=business';
 
     try {
-      setLoading(true);
-      const result = await getAllData(url, 'GET', null, options);
-      setData(result);
+      const response = await fetch(url);
+
+      if (response.ok) {
+        const result = await response.json();
+        setData(result);
+      } else if (response.status === 429) {
+        // ако върне 429 (too many request), се изчкаква 10 секунди преди да се направи нов опит
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        await fetchDataWithBackoff();
+      } else {
+        setError(`Error fetching data: ${response.statusText}`);
+      }
     } catch (error) {
-      setError(`Грешка при извличане на данни: ${error.message}`);
+      setError(`Error fetching data: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
-
-    const intervalId = setInterval(() => {
-      fetchData();
-    }, refreshInterval * 1000);
-
-    return () => clearInterval(intervalId);
-  }, [refreshInterval]);
-
-  const handleRefreshIntervalChange = (e) => {
-    setRefreshInterval(parseInt(e.target.value, 10));
-  };
+    fetchDataWithBackoff();
+  }, []); // изпълнява се един път при mount на компонента
 
   return (
     <div>
-      {/* Вашите компоненти за показване на новините */}
       {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
-      {data && data.length > 0 && (
-        <ul>
-          {data.map((item) => (
-            <li key={item.id}>{item.title}</li>
-          ))}
-        </ul>
+      {error && <p style={{color: 'red'}}>{error}</p>}
+      {data && (
+        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div className="relative flex h-10 items-center justify-between"></div>
+        <h2 className="text-xl font-semibold">News </h2>
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {data.results.map(article => (
+              <div key={article.article_id} className="bg-white rounded-lg overflow-hidden shadow-md">
+                <div className="p-4">
+                  <h2 className="text-xl font-bold mb-2">{article.title}</h2>
+                  <p className="text-gray-700 mb-4">{article.description}</p>
+                  <p className="text-sm text-gray-600">Source: {article.source_id}</p>
+                  <p className="text-sm text-gray-600">Published Date: {article.pubDate}</p>
+                  <a
+                    href={article.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-700 transition duration-300"
+                  >
+                    Read More
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
-
-      {/* Променете стойностите на тези елементи според вашия UI */}
-      <label htmlFor="refreshInterval">Refresh Interval (seconds): </label>
-      <input
-        type="number"
-        id="refreshInterval"
-        value={refreshInterval}
-        onChange={handleRefreshIntervalChange}
-      />
     </div>
   );
-}
+};
+
+export default Home;

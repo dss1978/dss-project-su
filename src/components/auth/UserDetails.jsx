@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import styles from './UserDetails.module.css';
 
 const UserDatails = () => {
     const { user, logout } = useAuth();
 
+    // Ползва се само за проследяване на user 
     useEffect(() => {
-        // Можете да използвате user, ако е нужно
         console.log(user);
     }, [user]);
 
