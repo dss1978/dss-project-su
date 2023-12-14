@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 
 const Home = () => {
   const [data, setData] = useState(null);
@@ -33,19 +34,21 @@ const Home = () => {
   }, []); // изпълнява се един път при mount на компонента
 
   return (
-    <div>
-      {loading && <p>Loading...</p>}
-      {error && <p style={{color: 'red'}}>{error}</p>}
-      {data && (
+     
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-10 items-center justify-between"></div>
         <h2 className="text-xl font-semibold">News </h2>
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {loading && <p>Loading...</p>}
+        {error && <p style={{color: 'red'}}>{error}</p>}
+        {data && (
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{marginTop:'15px'}}>
             {data.results.map(article => (
-              <div key={article.article_id} className="bg-white rounded-lg overflow-hidden shadow-md">
+              <div key={article.article_id} className="bg-gray-100 rounded-lg overflow-hidden shadow-md">
                 <div className="p-4">
                   <h2 className="text-xl font-bold mb-2">{article.title}</h2>
-                  <p className="text-gray-700 mb-4">{article.description}</p>
+                  {/* <p className="text-gray-700 mb-4">{article.description}</p> */}
+                  <p className="text-gray-700 mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.description) }} />
+
                   <p className="text-sm text-gray-600">Source: {article.source_id}</p>
                   <p className="text-sm text-gray-600">Published Date: {article.pubDate}</p>
                   <a
@@ -60,9 +63,9 @@ const Home = () => {
               </div>
             ))}
           </div>
+           )}
         </div>
-      )}
-    </div>
+     
   );
 };
 
