@@ -1,6 +1,7 @@
 Използвани допълнителни react библиотеки:
-1. react-router-dom
-2. firebase
+1. react-router-dom - client side routing
+2. firebase - Google cloud services - auth, dbase
+3. DOMPurify - DOMPurify - a DOM-only, super-fast, uber-tolerant XSS sanitizer for HTML, MathML and SVG.
 
 
 CSS библиотеки:
