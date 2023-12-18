@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { LinearScale, CategoryScale, LineElement, LineController, Tooltip } from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import Chart from 'chart.js/auto';
+import 'chartjs-adapter-date-fns';
+
+
 import { collection, getDocs, query, where, getDoc, doc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useAuth } from "../../context/AuthContext";
@@ -126,6 +132,74 @@ export default function MyWallet() {
     fetchData();
   };
 
+//Графика 
+
+// Регистриране ня грфиката с нейните компоненти
+Chart.register(LinearScale, CategoryScale, LineElement, LineController, Tooltip);
+
+// Функция за дефиниране на графика
+const generateChartData = (data) => {
+  try {
+    // Проверка дали data е дефинирано и не е празно
+    if (!data || data.length === 0) return [];
+
+    // Обект, който ще съдържа агрегирани данни
+    const aggregatedData = {};
+
+    // Обхождане на входните данни и агрегиране на стойностите по дати
+    data.forEach((item) => {
+      // Проверка дали item има свойство time и дали то е функция toDate
+      if (item.time && typeof item.time.toDate === 'function') {
+        // Създаване на ключ за дата във формат ISO
+        const dateKey = item.time.toDate().toISOString().split("T")[0];
+        // Извличане на вече съхранените данни или създаване на нови, ако ключът липсва
+        const existingData = aggregatedData[dateKey] || { quantity: 0, price: 0 };
+
+        // Актуализиране на агрегираните данни със стойностите от текущия елемент
+        existingData.quantity += item.quantity;
+        existingData.price += item.quantity * item.price;
+
+        // Записване на агрегирания обект в обекта с агрегирани данни
+        aggregatedData[dateKey] = existingData;
+      }
+    });
+
+    // Преобразуване на агрегираните данни в масив от обекти за използване в графика
+    const chartData = Object.keys(aggregatedData)
+      .map((dateKey) => {
+        try {
+          // Преобразуване на ключа за дата в обект тип Date
+          const dateObject = new Date(dateKey);
+          // Проверка дали датата е валидна
+          if (isNaN(dateObject.getTime())) return null;
+
+          // Създаване на обект за използване в графика със стойности от агрегираните данни
+          return { t: dateObject, y: aggregatedData[dateKey].quantity * aggregatedData[dateKey].price };
+        } catch (error) {
+          // Обработка на грешки при форматирането на датата
+          console.error("Error formatting date:", error);
+          console.log("Original date:", dateKey);
+          return null;
+        }
+      })
+      // Филтриране на невалидните обекти и сортиране на масива по време
+      .filter((item) => item !== null)
+      .sort((a, b) => a.t - b.t);
+
+    // Извеждане на генерираните данни за графика в конзолата
+    console.log("Generated Chart Data:", chartData);
+    // Връщане на генерираните данни за графика
+    return chartData;
+  } catch (error) {
+    // Обработка на неочаквана грешка
+    console.error("An unexpected error occurred:", error);
+    // Връщане на празен масив при грешка
+    return [];
+  }
+};
+
+
+
   return (
     <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
       <div className="relative flex h-10 items-center justify-between"></div>
@@ -133,12 +207,47 @@ export default function MyWallet() {
       <h2 className="text-xl font-semibold">My Wallet</h2>
 
       <div>
-        <button
-          onClick={() => openFormModal(null)}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-4 rounded-full"
-        >
-          Add Deal
-        </button>
+        
+        
+        {!loading && hasData ? (
+  <div>
+   <Line
+  data={{
+    datasets: [
+      {
+        label: 'Wallet deals by date',
+        data: generateChartData(data).map((item) => ({ x: item.t, y: item.y })),
+      },
+    ],
+  }}
+  options={{
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          unit: 'day',
+          displayFormats: {
+            day: 'MM/dd/yyyy',
+          },
+          tooltipFormat: 'MM/dd/yyyy',
+        },
+      },
+      y: {
+        beginAtZero: true,
+      },
+    },
+    responsive: true,
+    maintainAspectRatio: false, 
+  }}
+/>
+
+  </div>
+) : (
+  <p style={{ fontSize: '18px', fontWeight: 'bold', color: 'black', margin: '10px' }}>Loading...</p>
+)}
+
+
+<button onClick={() => openFormModal(null)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-4 rounded-full"  style={{marginTop:'20px'}}>Add Deal</button>
 
         {/* Модал за добавяне/редактиране на записи */}
         {isModalOpen && (
@@ -192,7 +301,8 @@ export default function MyWallet() {
                           {item.time ? new Date(item.time.toDate()).toLocaleString() : 'N/A'}
                         </td>
                         <td className="whitespace-nowrap border-r px-2 py-2 font-medium dark:border-neutral-500">
-                          {item.cryptoData ? item.cryptoData.name : 'N/A'} ({item.cryptoData ? item.cryptoData.symbol : 'N/A'})
+                          <img src={`crypto-logos/${item.cryptoData.name}.png`} alt={item.cryptoData.name} style={{width: '40px', height: '40px' , float:'left'}}/>
+                          <div style={{float: 'left', marginTop: '10px', marginLeft:'10px'}}>{item.cryptoData ? item.cryptoData.name : 'N/A'} ({item.cryptoData ? item.cryptoData.symbol : 'N/A'})</div>
                         </td>
                         <td className="whitespace-nowrap border-r px-2 py-2 font-medium dark:border-neutral-500">{item.quantity}</td>
                         <td className="whitespace-nowrap border-r px-2 py-2 font-medium dark:border-neutral-500 text-right">{item.price} $</td>

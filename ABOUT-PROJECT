@@ -2,6 +2,7 @@
 1. react-router-dom - client side routing
 2. firebase - Google cloud services - auth, dbase
 3. DOMPurify - DOMPurify - a DOM-only, super-fast, uber-tolerant XSS sanitizer for HTML, MathML and SVG.
+4. react-chartjs-2 - React components for Chart.js, the most popular charting library.
 
 
 CSS библиотеки:
