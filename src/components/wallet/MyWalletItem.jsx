@@ -88,8 +88,15 @@ export default function MyWalletItem() {
         >Back</button>
 
         <h2 className="text-2xl font-bold mt-4 mb-2">Deal Details</h2>
-        <div className="mb-2 text-base font-bold">Deal time: {walletData.time ? new Date(walletData.time.toDate()).toLocaleString() : "N/A"}</div>
-        <div className="mb-2 text-lg font-bold">Crypto: {walletData.cryptoData ? walletData.cryptoData.name : "N/A"}({walletData.cryptoData ? walletData.cryptoData.symbol : "N/A"})</div>
+        <div className="mb-2 text-base font-bold" >Deal time: {walletData.time ? new Date(walletData.time.toDate()).toLocaleString() : "N/A"}</div>
+
+        <div className="mb-2 text-lg font-bold" style={{float:'left', marginBottom:'20px'}}>
+          Crypto:  
+        <span style={{display:'inline-block', marginLeft:'10px'}}>{walletData.cryptoData ? walletData.cryptoData.name : "N/A"}({walletData.cryptoData ? walletData.cryptoData.symbol : "N/A"})</span>
+        </div>
+        <img src={`../crypto-logos/${walletData.cryptoData.name}.png`} alt={walletData.cryptoData.name} style={{width: '40px', height: '40px', marginLeft:'20px',marginTop:'-5px', float:'left'}}/>
+
+        
         <table className="min-w-full border text-center text-base font-light dark:border-neutral-500 max-w-screen-md mx-auto my-4 max-w-4xl">
           <thead className="border-b font-medium dark:border-neutral-500 bg-gray-600 text-white">
             <tr>
