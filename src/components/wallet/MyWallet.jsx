@@ -186,7 +186,7 @@ const generateChartData = (data) => {
       .filter((item) => item !== null)
       .sort((a, b) => a.t - b.t);
 
-    // Извеждане на генерираните данни за графика в конзолата
+    // Извеждане на генерираните данни за графиката в конзолата
     console.log("Generated Chart Data:", chartData);
     // Връщане на генерираните данни за графика
     return chartData;
@@ -208,43 +208,47 @@ const generateChartData = (data) => {
 
       <div>
         
-        
-        {!loading && hasData ? (
-  <div>
-   <Line
-  data={{
-    datasets: [
-      {
-        label: 'Wallet deals by date',
-        data: generateChartData(data).map((item) => ({ x: item.t, y: item.y })),
-      },
-    ],
-  }}
-  options={{
-    scales: {
-      x: {
-        type: 'time',
-        time: {
-          unit: 'day',
-          displayFormats: {
-            day: 'MM/dd/yyyy',
-          },
-          tooltipFormat: 'MM/dd/yyyy',
-        },
-      },
-      y: {
-        beginAtZero: true,
-      },
-    },
-    responsive: true,
-    maintainAspectRatio: false, 
-  }}
-/>
-
-  </div>
-) : (
-  <p style={{ fontSize: '18px', fontWeight: 'bold', color: 'black', margin: '10px' }}>Loading...</p>
-)}
+      {loading ? (
+          <p style={{ fontSize: '18px', fontWeight: 'bold', color: 'black', margin: '10px' }}>
+            Loading...
+          </p>
+        ) : hasData ? (
+          <div>
+            <Line
+              data={{
+                datasets: [
+                  {
+                    label: 'Wallet deals by date',
+                    data: generateChartData(data).map((item) => ({ x: item.t, y: item.y })),
+                  },
+                ],
+              }}
+              options={{
+                scales: {
+                  x: {
+                    type: 'time',
+                    time: {
+                      unit: 'day',
+                      displayFormats: {
+                        day: 'MM/dd/yyyy',
+                      },
+                      tooltipFormat: 'MM/dd/yyyy',
+                    },
+                  },
+                  y: {
+                    beginAtZero: true,
+                  },
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+              }}
+            />
+          </div>
+        ) : (
+          <p style={{ fontSize: '16px', fontWeight: 'bold', color: 'black', margin: '10px' }}>    
+There is no data entered to display the graph
+          </p>
+        )}
 
 
 <button onClick={() => openFormModal(null)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-4 rounded-full"  style={{marginTop:'20px'}}>Add Deal</button>
