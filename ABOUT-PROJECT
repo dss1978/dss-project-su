@@ -3,6 +3,7 @@
 2. firebase - Google cloud services - auth, dbase
 3. DOMPurify - DOMPurify - a DOM-only, super-fast, uber-tolerant XSS sanitizer for HTML, MathML and SVG.
 4. react-chartjs-2 - React components for Chart.js, the most popular charting library.
+5. chartjs-adapter-date-fns - Аdapter allowing date-fns to be used with Chart.js.
 
 
 CSS библиотеки:

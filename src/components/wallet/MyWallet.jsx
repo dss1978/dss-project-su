@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { LinearScale, CategoryScale, LineElement, LineController, Tooltip } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
-import 'chartjs-adapter-date-fns';
+import 'chartjs-adapter-date-fns'; //библиотека за работа с дати
 
 
 import { collection, getDocs, query, where, getDoc, doc, deleteDoc } from "firebase/firestore";
