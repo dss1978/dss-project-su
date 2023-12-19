@@ -47,8 +47,10 @@ const Home = () => {
                 <div className="p-4">
                   <h2 className="text-xl font-bold mb-2">{article.title}</h2>
                   {/* <p className="text-gray-700 mb-4">{article.description}</p> */}
-                  <p className="text-gray-700 mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.description) }} />
-
+        {/* Проверка дали article.description е дефиниран, преди да извикате slice */}
+          {article.description && (
+            <p className="text-gray-700 mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.description.slice(0, 250)) }} />
+          )}
                   <p className="text-sm text-gray-600">Source: {article.source_id}</p>
                   <p className="text-sm text-gray-600">Published Date: {article.pubDate}</p>
                   <a
